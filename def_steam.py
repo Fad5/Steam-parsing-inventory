@@ -1,14 +1,14 @@
 import requests
-from variables import  headers, url_steam_profil, game_id
+from config import  headers, url_steam_profil, game_id
 from time import sleep
 
 
-# Получеие JSON с ивинтаря
+# Getting JSON from inventory
 def get_JSON_inventory_steam():
     """
-    Фунцкция вызывает requests(url_steam_profil - ссылка на профиль)
-    результат преоброзовывают в json формат, если результат None
-    функция повторяется через 60 секунд
+    The function calls requests(url_steam_profil - link to the profile)
+    the result is converted to json format, if the result is None
+    the function repeats after 60 seconds
     """
     resource = requests.get(url=url_steam_profil, headers=headers)
     data = resource.json()
@@ -22,13 +22,13 @@ def get_JSON_inventory_steam():
         return data
 
 
-# Проверка то что товар можно продать 
+# Checking that the product can be sold
 def is_sell(item):
         if item['marketable'] == 1:
             return item
 
 
-#Подучение информации о предмете 
+# Getting information about the subject
 def get_info_item(item):
     if item == None:
           pass
@@ -47,7 +47,7 @@ def get_info_item(item):
             return data, class_id
 
 
-#Получние цены и преобразование str в float
+# Getting the price and converting str to float
 def get_price(item):
     sleep(10)
     get_info_items = get_info_item(item)
@@ -57,6 +57,8 @@ def get_price(item):
     price = float(item_price_list[0].replace(',','.'))
     return price, item_id
 
+
+# Getting the price from the db.json file
 def get_price_from_bd(url:str):
     resource = requests.get(url=url, headers=headers)
     data = resource.json()
@@ -66,9 +68,10 @@ def get_price_from_bd(url:str):
             get_price_from_bd(url=url)
     return data
      
-def get_price_bd(item_price:str):
+
+def get_price_bd(item_price:str)->float:
     """
-    Форматирование цены 10,10 руб -> ('10,10','руб') -> 10.10
+    Formatting the price of 10.10 rubles -> ('10.10','rub') -> 10.10
     """
     item_price_list = item_price.split(' ')
     price = float(item_price_list[0].replace(',','.'))
